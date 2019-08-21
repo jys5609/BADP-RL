@@ -1,0 +1,12 @@
+name: e2e-negotiation
+channels:
+- pytorch
+dependencies:
+- python=3
+- anaconda
+- pytorch
+- torchvision
+- cuda90
+- pip:
+  - visdom
+

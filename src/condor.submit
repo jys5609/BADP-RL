@@ -1,0 +1,15 @@
+universe=Vanilla
+Executable=condor.sh
+Arguments=$(Process)
+
+requirements=(Machine=="c01"||Machine=="c02"||Machine=="c03"||Machine=="c04"||Machine=="c05"||Machine=="c06"||Machine=="c07"||Machine=="c08"||Machine=="c09"||Machine=="c10"||Machine=="c11"||Machine=="c12"||Machine=="c13"||Machine=="c14"||Machine=="c15"||Machine=="c16"||Machine=="c17"||Machine=="c18"||Machine=="c20"||Machine=="c21"||Machine=="c22"||Machine=="c23"||Machine=="c24"||Machine=="c25"||Machine=="c26")
+should_transfer_files=YES
+when_to_transfer_output = ON_EXIT_OR_EVICT
+
+Output=./condor/output/$(cluster).$(process).out
+Log=./condor/log/$(cluster).$(process).out
+Error=./condor/error/$(cluster).$(process).out
+
+RequestCpus = 4
+#RequestMemory = 7000
+queue 25
