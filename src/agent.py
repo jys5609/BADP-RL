@@ -95,8 +95,8 @@ class BAMCTSAgent(Agent):
 
         # self.num_simulations = 100
         self.timeout_sec = 0.3 #0.3
-        self.num_actions = 5 #3
-        self.num_states = 3 #3
+        self.num_actions = 10 #3
+        self.num_states = 10 #3
         self.exploration_constant = 5
 
     def feed_context(self, ctx):
@@ -285,7 +285,7 @@ class BAMCTSAgent(Agent):
             self._simulate(self.root, 0)
             simulation_count += 1
             # if time.time() - start_time > self.timeout_sec:
-            if simulation_count == 50:
+            if simulation_count == 150:
                 break
         # print('=' * 80)
         # print('simulation_count: ', simulation_count)
@@ -343,8 +343,8 @@ class MCTSAgent(Agent):
 
         # self.num_simulations = 100
         self.timeout_sec = 0.3
-        self.num_actions = 5
-        self.num_states = 3
+        self.num_actions = 10
+        self.num_states = 10
         self.exploration_constant = 5
 
     def feed_context(self, ctx):
@@ -482,7 +482,7 @@ class MCTSAgent(Agent):
             self._simulate(self.root, 0)
             simulation_count += 1
             # if time.time() - start_time > self.timeout_sec:
-            if simulation_count == 25:
+            if simulation_count == 150:
                 break
         # print('=' * 80)
         # print('simulation_count: ', simulation_count)
@@ -715,8 +715,8 @@ class RnnAgent(Agent):
         # Prior and Posterior distribution
         # goal values: [(0, 3, 6), (0, 3, 6), (0, 3, 6)]: 27
         # self.values = ['0', '3', '6']
-        # self.values = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-        self.values = ['0', '2', '4', '6', '8']
+        self.values = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+        # self.values = ['0', '2', '4', '6', '8']
         # self.values = ['0', '3', '6', '9']
         # self.values = ['0', '6']
         self.goal_dim = len(self.values)**3
@@ -999,8 +999,8 @@ class HierarchicalAgent(RnnAgent):
 class RnnRolloutAgent(RnnAgent):
     def __init__(self, model, args, name='Alice', train=False):
         super(RnnRolloutAgent, self).__init__(model, args, name)
-        self.ncandidate = 5
-        self.nrollout = 10
+        self.ncandidate = 10
+        self.nrollout = 15
         self.rollout_len = 100
 
     def _choose_rollout(self, sents, sample=False):

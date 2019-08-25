@@ -41,8 +41,8 @@ class SelfPlay(object):
         for ctxs in self.ctx_gen.iter(nepoch=3):
             n += 1
             ##
-            # if n > 100:
-            #     break
+            if n > 4000:
+                break
             self.logger.dump('* Dialogue %d' % n)
             ##
             # if self.args.smart_alice and n > 1000:
