@@ -282,4 +282,6 @@ class Dialog(object):
             data_saver.write('<partner_input> %s </partner_input>\n' % ' '.join(ctxs[1]))
             data_saver.flush()
 
+        self.agents[0].agent.posterior = np.ones((self.agents[0].agent.goal_dim,)) / self.agents[0].agent.goal_dim
+
         return conv, agree, rewards

@@ -121,7 +121,34 @@ class BAMCTSAgent(Agent):
         #TODO: implement calculate_likelihood
         log_likelihood = partner.calculate_likelihood(inpt)
         self.posterior_update(log_likelihood)
+        # self.plot_posterior()
         return self.agent.read(inpt)
+
+    def plot_posterior(self):
+        x_book = [i - 0.2 for i in range(11)]
+        x_hat = [i for i in range(11)]
+        x_ball = [i + 0.2 for i in range(11)]
+        books = [0 for i in range(11)]
+        hats = [0 for i in range(11)]
+        balls = [0 for i in range(11)]
+        idx = 0
+
+        for book in self.agent.values:
+            for hat in self.agent.values:
+                for ball in self.agent.values:
+                    books[int(book)] += self.agent.posterior[idx]
+                    hats[int(hat)] += self.agent.posterior[idx]
+                    balls[int(ball)] += self.agent.posterior[idx]
+                    idx += 1
+
+        import matplotlib.pyplot as plt
+
+        bar1 = plt.bar(x_book, books, width=0.2, color='b', align='center')
+        bar2 = plt.bar(x_hat, hats, width=0.2, color='g', align='center')
+        bar3 = plt.bar(x_ball, balls, width=0.2, color='r', align='center')
+        plt.legend((bar1[0], bar2[0], bar3[0]), ('book', 'hat', 'ball'), ncol=3, loc=9)
+        plt.ylim((0, 0.8))
+        plt.show()
 
     def softmax(self, x, temperature=0.1):
         e_x = np.exp(x/temperature)
