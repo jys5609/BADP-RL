@@ -1,16 +1,26 @@
 ZONE=us-east1-b
+NFS_IP=`gcloud compute instances describe nfs-instance --zone=$ZONE --format='get(networkInterfaces[0].networkIP)'`
 
 function create_instance(){
     gcloud compute  instances create $1-template \
         --zone=$ZONE \
         --machine-type=n1-standard-1 \
-        --image=debian-9-stretch-v20181011 \
+        --image=debian-9-stretch-v20190116 \
         --image-project=debian-cloud \
         --boot-disk-size=10GB \
         --metadata-from-file startup-script=startup-scripts/$1.sh
 }
 
 function install_custom_packages(){
+    # NFS setup
+    gcloud compute ssh $1-template --zone $ZONE -- "\
+        sudo apt-get install -y nfs-common; \
+        sudo mkdir /mnt/nfs; \
+        sudo mount -t nfs $NFS_IP:/var/nfs-export /mnt/nfs/; \
+        sudo chmod o+w /mnt/nfs/; \
+        echo \"$NFS_IP:/var/nfs-export /mnt/nfs/    nfs\" | sudo tee -a /etc/fstab; \
+    "
+
     # Insatll custom packages
     gcloud compute ssh $1-template --zone $ZONE -- '\
 	    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh; \
@@ -43,8 +53,8 @@ create_instance condor-compute
 create_instance condor-submit
 create_instance condor-master
 
-echo 'Sleep for a while... (30 seconds)'
-sleep 30
+echo 'Sleep for a while... (300 seconds)'
+sleep 300
 
 echo 'Install custom packages...'
 install_custom_packages condor-compute
