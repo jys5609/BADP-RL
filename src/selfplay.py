@@ -165,15 +165,15 @@ def main():
 
     args.cuda = False
     args.alice_model_file = 'rnn_model_%d.th' % selfplay_round
-    args.bob_model_file = 'rnn_model_%d.th' % selfplay_round #'rnn_model_0.th'
+    args.bob_model_file = 'rnn_model.th'
     args.context_file = 'data/negotiate/selfplay.txt'
     args.temperature = 1.0
-    args.selection_model_file = 'selection_model_%d.th' % selfplay_round #'selection_model.th'
+    args.selection_model_file = 'selection_model.th'
     args.verbose = True
     # args.log_file = 'selfplay_log_%d_%02d.txt' % (selfplay_round, args.condor_node_idx)
 
     if args.search_type == 'mcts':
-        args.log_file = 'selfplay_log_%s.txt' % (args.sampling)
+        args.log_file = 'selfplay_log_%s_%d.txt' % (args.sampling, selfplay_round)
     elif args.search_type == 'rollout':
         args.log_file = 'selfplay_log_rollout.txt'
     else:
@@ -197,13 +197,15 @@ def main():
     bob_model = utils.load_model(args.bob_model_file)
     bob_ty = get_agent_type(bob_model, args.smart_bob)
     bob = bob_ty(bob_model, args, name='Bob', train=False, diverse=args.diverse_bob)
+    bob_for_search = bob_ty(bob_model, args, name='BobCopy', train=False, diverse=args.diverse_bob)
 
     bob.vis = False
+    bob_for_search.vis = False
 
     ##
     # alice = MCTSAgent(alice, bob, args, name='MCTS')
     if args.search_type == 'mcts':
-        alice = BAMCTSAgent(alice, bob, args, name='MCTS')
+        alice = BAMCTSAgent(alice, bob_for_search, args, name='MCTS')
     # alice = RolloutAgent(alice, bob, args, name='Rollout')
     ##
 
