@@ -1,12 +1,12 @@
-name: e2e-negotiation
+name: bamcp-negotiation
 channels:
 - pytorch
 dependencies:
 - python=3
 - anaconda
-- pytorch
+- pytorch=1.0.0
 - torchvision
 - cuda90
 - pip:
-  - visdom
+  - visdom==0.1.8.4
 
