@@ -1,5 +1,8 @@
+BUCKET_NAME=bamcp-bucket
 ZONE=us-east1-b
-NFS_IP=`gcloud compute instances describe nfs-instance --zone=$ZONE --format='get(networkInterfaces[0].networkIP)'`
+
+GITHUB_USERNAME=username
+GITHUB_PASSWORD=password
 
 function create_instance(){
     gcloud compute  instances create $1-template \
@@ -8,30 +11,29 @@ function create_instance(){
         --image=debian-9-stretch-v20190116 \
         --image-project=debian-cloud \
         --boot-disk-size=10GB \
+        --scopes storage-full \
         --metadata-from-file startup-script=startup-scripts/$1.sh
 }
 
 function install_custom_packages(){
-    # NFS setup
-    gcloud compute ssh $1-template --zone $ZONE -- "\
-        sudo apt-get install -y nfs-common; \
-        sudo mkdir /mnt/nfs; \
-        sudo mount -t nfs $NFS_IP:/var/nfs-export /mnt/nfs/; \
-        sudo chmod o+w /mnt/nfs/; \
-        echo \"$NFS_IP:/var/nfs-export /mnt/nfs/    nfs\" | sudo tee -a /etc/fstab; \
+    # gcsfuse
+    gcloud compute ssh $1-template --zone $ZONE -- "
+        mkdir bucket;
+        sudo mount -t gcsfuse -o rw,user,allow_other,uid=1000,gid=1001 $BUCKET_NAME bucket;
+        echo \"$BUCKET_NAME \$HOME/bucket gcsfuse rw,user,allow_other,uid=1000,gid=1001\" | sudo tee -a /etc/fstab;
     "
 
     # Insatll custom packages
-    gcloud compute ssh $1-template --zone $ZONE -- '\
-	    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh; \
-	    bash Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/miniconda; \
-	    rm Miniconda3-latest-Linux-x86_64.sh; \
-	    eval "$($HOME/miniconda/bin/conda shell.bash hook)"; \
-	    conda init; \
-	    git clone https://github.com/jys5609/BAMCP_negotiation.git; \
-        cd BAMCP_negotiation; \
-        conda env create -f environment.yml; \
-    '
+    gcloud compute ssh $1-template --zone $ZONE -- "
+        wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh;
+        bash Miniconda3-latest-Linux-x86_64.sh -b -p \$HOME/miniconda;
+        rm Miniconda3-latest-Linux-x86_64.sh;
+        eval \"\$(\$HOME/miniconda/bin/conda shell.bash hook)\";
+        conda init;
+        git clone https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/jys5609/BAMCP_negotiation.git;
+        cd BAMCP_negotiation;
+        conda env create -f environment.yml;
+    "
 }
 
 function stop_instance(){
