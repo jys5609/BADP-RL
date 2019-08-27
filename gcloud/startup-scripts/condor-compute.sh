@@ -25,9 +25,12 @@ mkdir -p /etc/condor/config.d/
 cat <<EOF > condor_config.local
 DISCARD_SESSION_KEYRING_ON_STARTUP=False
 CONDOR_ADMIN=EMAIL
-CONDOR_HOST=condor-master
 DAEMON_LIST = MASTER, STARTD
-ALLOW_WRITE = \$(ALLOW_WRITE), \$(CONDOR_HOST)
+CONDOR_HOST = condor-master
+ALLOW_READ = *
+ALLOW_WRITE = *
+UID_DOMAIN = condor-master
+TRUST_UID_DOMAIN = TRUE
 EOF
 
 mv condor_config.local /etc/condor/config.d/
@@ -36,9 +39,9 @@ mv condor_config.local /etc/condor/config.d/
 update-rc.d condor defaults
 update-rc.d condor enable
 
-# gcsfuse
-export GCSFUSE_REPO=gcsfuse-`lsb_release -c -s`
-echo "deb http://packages.cloud.google.com/apt $GCSFUSE_REPO main" | sudo tee /etc/apt/sources.list.d/gcsfuse.list
-curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-apt-get update
-apt-get install -y gcsfuse
+# # gcsfuse
+# export GCSFUSE_REPO=gcsfuse-`lsb_release -c -s`
+# echo "deb http://packages.cloud.google.com/apt $GCSFUSE_REPO main" | sudo tee /etc/apt/sources.list.d/gcsfuse.list
+# curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+# apt-get update
+# apt-get install -y gcsfuse

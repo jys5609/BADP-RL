@@ -44,6 +44,7 @@ function install_custom_packages(){
         git clone https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/jys5609/BAMCP_negotiation.git;
         cd BAMCP_negotiation;
         conda env create -f environment.yml;
+        cd $HOME; rm BAMCP_negotiation -rf;
     "
 }
 

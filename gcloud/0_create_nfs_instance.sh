@@ -1,5 +1,6 @@
 ZONE=us-east1-b
 
+echo 'Update default-allow-internal firewall rule (source-ranges=0.0.0.0/0) ...'
 gcloud compute firewall-rules update default-allow-internal --source-ranges=0.0.0.0/0 --rules=all
 
 gcloud compute  instances create nfs-instance \
@@ -21,8 +22,8 @@ gcloud compute  instances create example \
     --tags http-server,https-server \
     --metadata startup-script="apt-get update && apt-get install -y wget curl git nfs-common"
 
-echo 'Sleep 300 seconds...'
-sleep 300
+echo 'Sleep 180 seconds...'
+sleep 180
 
 gcloud compute ssh nfs-instance --zone $ZONE -- "\
     sudo exportfs -a; \
@@ -30,6 +31,9 @@ gcloud compute ssh nfs-instance --zone $ZONE -- "\
     sudo service nfs-kernel-server restart; \
     sudo service rpcbind restart; \
 "
+
+echo 'Sleep 30 seconds...'
+sleep 30
 
 echo 'NFS connection test...'
 NFS_IP=`gcloud compute instances describe nfs-instance --zone=$ZONE --format='get(networkInterfaces[0].networkIP)'`
