@@ -7,4 +7,4 @@ Log                     = condor/run.$(process).log
 Error                   = condor/err.$(process)
 # RequestCpus             = 4
 
-queue 25
+queue 100
