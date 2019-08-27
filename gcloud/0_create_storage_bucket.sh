@@ -1,6 +1,6 @@
 BUCKET_NAME=bamcp-bucket
 
-gsutil mb gs://$BUCKET_NAME
+gsutil mb -c standard -l us-east1 gs://$BUCKET_NAME
 
 
 # gcloud compute firewall-rules update default-allow-internal --source-ranges=0.0.0.0/0 --rules=all
