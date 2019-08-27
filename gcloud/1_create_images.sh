@@ -1,5 +1,6 @@
 BUCKET_NAME=bamcp-bucket
 ZONE=us-east1-b
+NFS_IP=`gcloud compute instances describe nfs-instance --zone=$ZONE --format='get(networkInterfaces[0].networkIP)'`
 
 GITHUB_USERNAME=username
 GITHUB_PASSWORD=password
@@ -8,7 +9,7 @@ function create_instance(){
     gcloud compute  instances create $1-template \
         --zone=$ZONE \
         --machine-type=n1-standard-1 \
-        --image=debian-9-stretch-v20190116 \
+        --image=debian-9-stretch-v20190124 \
         --image-project=debian-cloud \
         --boot-disk-size=10GB \
         --scopes storage-full \
@@ -16,11 +17,21 @@ function create_instance(){
 }
 
 function install_custom_packages(){
-    # gcsfuse
-    gcloud compute ssh $1-template --zone $ZONE -- "
-        mkdir bucket;
-        sudo mount -t gcsfuse -o rw,user,allow_other,uid=1000,gid=1001,file_mode=777,dir_mode=777 $BUCKET_NAME bucket;
-        echo \"$BUCKET_NAME \$HOME/bucket gcsfuse rw,user,allow_other,uid=1000,gid=1001,file_mode=777,dir_mode=777\" | sudo tee -a /etc/fstab;
+    # # gcsfuse
+    # gcloud compute ssh $1-template --zone $ZONE -- "
+    #     mkdir bucket;
+    #     echo \"user_allow_other\" | sudo tee -a /etc/fuse.conf;
+    #     sudo mount -t gcsfuse -o rw,user,allow_other,uid=1000,gid=1001,file_mode=777,dir_mode=777,limit_ops_per_sec=100000 $BUCKET_NAME bucket;
+    #     echo \"$BUCKET_NAME \$HOME/bucket gcsfuse rw,user,allow_other,uid=1000,gid=1001,file_mode=777,dir_mode=777,limit_ops_per_sec=100000\" | sudo tee -a /etc/fstab;
+    # "
+
+    # NFS
+    gcloud compute ssh $1-template --zone $ZONE -- "\
+        sudo apt-get install -y nfs-common; \
+        sudo mkdir -p /mnt/nfs; \
+        sudo mount -t nfs $NFS_IP:/var/nfs-export /mnt/nfs/; \
+        sudo chmod o+w /mnt/nfs/; \
+        echo \"$NFS_IP:/var/nfs-export /mnt/nfs/ nfs\" | sudo tee -a /etc/fstab; \
     "
 
     # Insatll custom packages

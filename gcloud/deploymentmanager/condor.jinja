@@ -15,6 +15,7 @@ resources:
   type: compute.v1.network
   properties:
     autoCreateSubnetworks: false
+
 - name: ssh-firewall-rule
   type: compute.v1.firewall
   properties:
@@ -23,6 +24,7 @@ resources:
     allowed:
     - IPProtocol: TCP
       ports: ["22"]
+
 - name: condor-subnet
   type: compute.v1.subnetworks
   properties:
@@ -30,17 +32,48 @@ resources:
     ipCidrRange: 10.240.0.0/16
     region: us-east1
     privateIpGoogleAccess: true
+
 - name: all-internal-firewall-rule
   type: compute.v1.firewall
   properties:
     network: $(ref.condor-network.selfLink)
-    sourceRanges: ["10.240.0.0/16"]
+    sourceRanges: ["0.0.0.0/0"]
     allowed:
     - IPProtocol: TCP
       ports: ["0-65535"]
     - IPProtocol: UDP
       ports: ["0-65535"]
     - IPProtocol: ICMP
+
+
+- name: peering-condor-default
+  action: gcp-types/compute-v1:compute.networks.addPeering
+  metadata:
+    runtimePolicy:
+    - CREATE
+  properties:
+    network: condor-network
+    name: peering-condor-default
+    autoCreateRoutes: true
+    peerNetwork: https://www.googleapis.com/compute/v1/projects/{{ env["project"] }}/global/networks/default
+  metadata:
+    dependsOn:
+    - condor-network
+
+- name: peering-default-condor
+  action: gcp-types/compute-v1:compute.networks.addPeering
+  metadata:
+    runtimePolicy:
+    - CREATE
+  properties:
+    network: default
+    name: peering-default-condor
+    autoCreateRoutes: true
+    peerNetwork: $(ref.condor-network.selfLink)
+  metadata:
+    dependsOn:
+    - condor-network
+
 
 - name: condor-master
   type: compute.v1.instance
