@@ -173,7 +173,10 @@ def main():
     # args.log_file = 'selfplay_log_%d_%02d.txt' % (selfplay_round, args.condor_node_idx)
 
     if args.search_type == 'mcts':
-        args.log_file = 'selfplay_log_%s_%d.txt' % (args.sampling, selfplay_round)
+        if args.condor_num_nodes > 1:
+            args.log_file = 'selfplay_log_%s_%d_%02d.txt' % (args.sampling, selfplay_round, args.condor_node_idx)
+        else:
+            args.log_file = 'selfplay_log_%s_%d.txt' % (args.sampling, selfplay_round)
     elif args.search_type == 'rollout':
         args.log_file = 'selfplay_log_rollout.txt'
     else:
@@ -182,9 +185,9 @@ def main():
     # args.condor_num_nodes = 25
     assert args.condor_node_idx >= 0 and args.condor_node_idx < args.condor_num_nodes
     if args.condor_num_nodes > 1:
-        args.selfplay_data_path = 'data/negotiate_selfplay_%d_%02d' % (selfplay_round + 1, args.condor_node_idx)
+        args.selfplay_data_path = 'data/negotiate_selfplay_%s_%d_%02d' % (args.sampling, selfplay_round + 1, args.condor_node_idx)
     else:
-        args.selfplay_data_path = 'data/negotiate_selfplay_%d' % (selfplay_round)
+        args.selfplay_data_path = 'data/negotiate_selfplay_%s_%d' % (args.sampling, selfplay_round)
     ##
 
     utils.use_cuda(args.cuda)
