@@ -41,6 +41,7 @@ resources:
     - IPProtocol: UDP
       ports: ["0-65535"]
     - IPProtocol: ICMP
+
 - name: condor-master
   type: compute.v1.instance
   properties:
@@ -105,6 +106,9 @@ resources:
           sourceImage: https://www.googleapis.com/compute/v1/projects/{{ env["project"] }}/global/images/{{ properties["computeimage"] }}
       networkInterfaces:
       - subnetwork: $(ref.condor-subnet.selfLink)
+        accessConfigs:
+        - name: External NAT
+          type: ONE_TO_ONE_NAT
       serviceAccounts:
       - email: "default"
         scopes:
@@ -146,6 +150,9 @@ resources:
           sourceImage: https://www.googleapis.com/compute/v1/projects/{{ env["project"] }}/global/images/{{ properties["computeimage"] }}
       networkInterfaces:
       - subnetwork: $(ref.condor-subnet.selfLink)
+        accessConfigs:
+        - name: External NAT
+          type: ONE_TO_ONE_NAT
       serviceAccounts:
       - email: "default"
         scopes:
