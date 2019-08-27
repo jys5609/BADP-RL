@@ -11,14 +11,14 @@
 #}
 
 resources:
-- name: delete-peering-condor-default
-  action: gcp-types/compute-v1:compute.networks.removePeering
-  properties:
-    name: peering-condor-default
-    network: condor-network
-  metadata:
-    runtimePolicy:
-    - DELETE
+#- name: delete-peering-condor-default
+#  action: gcp-types/compute-v1:compute.networks.removePeering
+#  properties:
+#    name: peering-condor-default
+#    network: condor-network
+#  metadata:
+#    runtimePolicy:
+#    - DELETE
 
 - name: delete-peering-default-condor
   action: gcp-types/compute-v1:compute.networks.removePeering

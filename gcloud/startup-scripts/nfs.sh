@@ -1,6 +1,6 @@
 apt-get update && apt-get install -y wget curl net-tools git nfs-kernel-server nfs-common portmap
 
-mkdir /var/nfs-export
+mkdir -p /var/nfs-export
 chmod o+w /var/nfs-export
 
 echo "rpcbind mountd nfsd statd lockd rquotad : 127.0.0.1 : allow" > /etc/hosts.allow
