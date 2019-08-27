@@ -11,6 +11,25 @@
 #}
 
 resources:
+- name: delete-peering-condor-default
+  action: gcp-types/compute-v1:compute.networks.removePeering
+  properties:
+    name: peering-condor-default
+    network: condor-network
+  metadata:
+    runtimePolicy:
+    - DELETE
+
+- name: delete-peering-default-condor
+  action: gcp-types/compute-v1:compute.networks.removePeering
+  properties:
+    name: peering-default-condor
+    network: default
+  metadata:
+    runtimePolicy:
+    - DELETE
+
+
 - name: condor-network
   type: compute.v1.network
   properties:
@@ -46,31 +65,29 @@ resources:
     - IPProtocol: ICMP
 
 
-- name: peering-condor-default
+- name: create-peering-condor-default
   action: gcp-types/compute-v1:compute.networks.addPeering
-  metadata:
-    runtimePolicy:
-    - CREATE
   properties:
-    network: condor-network
     name: peering-condor-default
+    network: condor-network
     autoCreateRoutes: true
     peerNetwork: https://www.googleapis.com/compute/v1/projects/{{ env["project"] }}/global/networks/default
   metadata:
+    runtimePolicy:
+    - CREATE
     dependsOn:
     - condor-network
 
-- name: peering-default-condor
+- name: create-peering-default-condor
   action: gcp-types/compute-v1:compute.networks.addPeering
-  metadata:
-    runtimePolicy:
-    - CREATE
   properties:
-    network: default
     name: peering-default-condor
+    network: default
     autoCreateRoutes: true
     peerNetwork: $(ref.condor-network.selfLink)
   metadata:
+    runtimePolicy:
+    - CREATE
     dependsOn:
     - condor-network
 
