@@ -179,10 +179,12 @@ def main():
     else:
         assert False
 
-    args.condor_num_nodes = 25
+    # args.condor_num_nodes = 25
     assert args.condor_node_idx >= 0 and args.condor_node_idx < args.condor_num_nodes
-    # args.selfplay_data_path = 'data/negotiate_selfplay_%d_%02d' % (selfplay_round + 1, args.condor_node_idx)
-    args.selfplay_data_path = 'data/negotiate_selfplay_%d' % (selfplay_round)
+    if args.condor_num_nodes > 1:
+        args.selfplay_data_path = 'data/negotiate_selfplay_%d_%02d' % (selfplay_round + 1, args.condor_node_idx)
+    else:
+        args.selfplay_data_path = 'data/negotiate_selfplay_%d' % (selfplay_round)
     ##
 
     utils.use_cuda(args.cuda)
@@ -211,18 +213,20 @@ def main():
 
     dialog = Dialog([alice, bob], args)
     logger = DialogLogger(verbose=args.verbose, log_file=args.log_file)
-    ctx_gen = ContextGenerator(args.context_file)
-    # ctx_gen = CondorContextGenerator(args.context_file, args.condor_num_nodes, args.condor_node_idx)
+    if args.condor_num_nodes > 1:
+        ctx_gen = CondorContextGenerator(args.context_file, args.condor_num_nodes, args.condor_node_idx)
+    else:
+        ctx_gen = ContextGenerator(args.context_file)
 
     selfplay = SelfPlay(dialog, ctx_gen, args, logger)
     selfplay.run()
 
-    ##
-    # import time
-    # time.sleep(0.1)
-    # os.rename(args.selfplay_data_path + '/data.txt.tmp', args.selfplay_data_path + '/data.txt')
-    # selfplay_data_splitter(args.selfplay_data_path)
-    ##
+    #
+    import time
+    time.sleep(0.1)
+    os.rename(args.selfplay_data_path + '/data.txt.tmp', args.selfplay_data_path + '/data.txt')
+    selfplay_data_splitter(args.selfplay_data_path)
+    #
 
 
 if __name__ == '__main__':
