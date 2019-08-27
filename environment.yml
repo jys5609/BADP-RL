@@ -3,10 +3,9 @@ channels:
 - pytorch
 dependencies:
 - python=3
-- anaconda
+- numpy
 - pytorch=1.0.0
 - torchvision
 - cuda90
 - pip:
   - visdom==0.1.8.4
-
