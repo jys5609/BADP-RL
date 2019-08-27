@@ -19,8 +19,8 @@ function install_custom_packages(){
     # gcsfuse
     gcloud compute ssh $1-template --zone $ZONE -- "
         mkdir bucket;
-        sudo mount -t gcsfuse -o rw,user,allow_other,uid=1000,gid=1001 $BUCKET_NAME bucket;
-        echo \"$BUCKET_NAME \$HOME/bucket gcsfuse rw,user,allow_other,uid=1000,gid=1001\" | sudo tee -a /etc/fstab;
+        sudo mount -t gcsfuse -o rw,user,allow_other,uid=1000,gid=1001,file_mode=777,dir_mode=777 $BUCKET_NAME bucket;
+        echo \"$BUCKET_NAME \$HOME/bucket gcsfuse rw,user,allow_other,uid=1000,gid=1001,file_mode=777,dir_mode=777\" | sudo tee -a /etc/fstab;
     "
 
     # Insatll custom packages
