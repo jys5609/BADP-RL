@@ -1,2 +1,4 @@
 __pycache__
 .idea
+selfplay_log_*.txt
+src/data/negotiate_selfplay_*
