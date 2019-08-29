@@ -1,14 +1,25 @@
 import shutil
 import os
+import glob
 
 selfplay_round = 0
-num_condor_nodes = 256
+num_condor_nodes = 384
 sampling = 'posterior'
+
+print('selfplay_round: ', selfplay_round)
+print('num_condor_nodes: ', num_condor_nodes)
+print('sampling: ', sampling)
+print('======================================')
 
 # selfplay data
 train_data = []
 val_data = []
 test_data = []
+
+num_log_files = len(glob.glob('selfplay_log_%s_%d_*.txt' % (sampling, selfplay_round)))
+if num_log_files != num_condor_nodes:
+    print('The number of log files %d is differnt from the num_condor_nodes %d' % (num_log_files, num_condor_nodes))
+assert num_log_files == num_condor_nodes
 
 for idx in range(num_condor_nodes):
     dirname = 'data/negotiate_selfplay_%s_%d_%02d' % (sampling, selfplay_round + 1, idx)

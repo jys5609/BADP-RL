@@ -215,7 +215,7 @@ def main():
     ##
 
     dialog = Dialog([alice, bob], args)
-    logger = DialogLogger(verbose=args.verbose, log_file=args.log_file)
+    logger = DialogLogger(verbose=args.verbose, log_file=args.log_file + '.tmp')
     if args.condor_num_nodes > 1:
         ctx_gen = CondorContextGenerator(args.context_file, args.condor_num_nodes, args.condor_node_idx)
     else:
@@ -228,6 +228,7 @@ def main():
     import time
     time.sleep(0.1)
     os.rename(args.selfplay_data_path + '/data.txt.tmp', args.selfplay_data_path + '/data.txt')
+    os.rename(args.log_file + '.tmp', args.log_file)
     selfplay_data_splitter(args.selfplay_data_path)
     #
 
