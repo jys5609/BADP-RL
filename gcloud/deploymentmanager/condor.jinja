@@ -96,7 +96,7 @@ resources:
   type: compute.v1.instance
   properties:
     zone: {{ properties["zone"] }}
-    machineType: https://www.googleapis.com/compute/v1/projects/{{ env["project"] }}/zones/{{ properties["zone"] }}/machineTypes/{{ properties["instancetype"] }}
+    machineType: https://www.googleapis.com/compute/v1/projects/{{ env["project"] }}/zones/{{ properties["zone"] }}/machineTypes/n1-standard-1
     disks:
     - deviceName: boot
       type: PERSISTENT
@@ -119,7 +119,7 @@ resources:
   type: compute.v1.instance
   properties:
     zone: {{ properties["zone"] }}
-    machineType: https://www.googleapis.com/compute/v1/projects/{{ env["project"] }}/zones/{{ properties["zone"] }}/machineTypes/{{ properties["instancetype"] }}
+    machineType: https://www.googleapis.com/compute/v1/projects/{{ env["project"] }}/zones/{{ properties["zone"] }}/machineTypes/n1-standard-1
     disks:
     - deviceName: boot
       type: PERSISTENT

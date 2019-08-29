@@ -20,7 +20,7 @@ resources:
   type: condor.jinja
   properties:
     count: 0
-    pvmcount: 5
+    pvmcount: 4
     zone: us-east1-b
     email: someone@somewhere.com
-    instancetype: n1-standard-1
+    instancetype: n1-standard-64
