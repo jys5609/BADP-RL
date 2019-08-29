@@ -1,8 +1,8 @@
 import shutil
 import os
 
-selfplay_round = 1
-num_condor_nodes = 100
+selfplay_round = 0
+num_condor_nodes = 256
 sampling = 'posterior'
 
 # selfplay data
@@ -11,7 +11,7 @@ val_data = []
 test_data = []
 
 for idx in range(num_condor_nodes):
-    dirname = 'data/negotiate_selfplay_%s_%d_%02d' % (sampling, selfplay_round, idx)
+    dirname = 'data/negotiate_selfplay_%s_%d_%02d' % (sampling, selfplay_round + 1, idx)
     with open('%s/train.txt' % dirname, 'r') as file:
         train_data += file.read().strip().split('\n')
     with open('%s/val.txt' % dirname, 'r') as file:
@@ -19,7 +19,7 @@ for idx in range(num_condor_nodes):
     with open('%s/test.txt' % dirname, 'r') as file:
         test_data += file.read().strip().split('\n')
 
-save_dirname = 'data/negotiate_selfplay_%d' % selfplay_round
+save_dirname = 'data/negotiate_selfplay_%d' % (selfplay_round + 1)
 if not os.path.exists(save_dirname):
     os.makedirs(save_dirname)
 
@@ -32,7 +32,7 @@ with open('%s/test.txt' % save_dirname, 'w') as file:
 
 # after aggregation... delete splitted directories
 for idx in range(num_condor_nodes):
-    dirname = 'data/negotiate_selfplay_%d_%02d' % (selfplay_round, idx)
+    dirname = 'data/negotiate_selfplay_%s_%d_%02d' % (sampling, selfplay_round + 1, idx)
     try:
         shutil.rmtree(dirname)
     except OSError as e:
@@ -46,10 +46,10 @@ for idx in range(num_condor_nodes):
 log_text = ""
 for idx in range(num_condor_nodes):
     filename = 'selfplay_log_%s_%d_%02d.txt' % (sampling, selfplay_round, idx)
-    with open(filename) as file:
+    with open(filename, 'r') as file:
         log_text += file.read()
 
-with open('selfplay_log_%s_%d.txt' % (sampling, selfplay_round)) as file:
+with open('selfplay_log_%s_%d.txt' % (sampling, selfplay_round), 'w') as file:
     file.write(log_text)
 
 # After aggregation, delete each of separated log files...
