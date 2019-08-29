@@ -210,7 +210,7 @@ def main():
     ##
     # alice = MCTSAgent(alice, bob, args, name='MCTS')
     if args.search_type == 'mcts':
-        alice = BAMCTSAgent(alice, bob_for_search, args, name='MCTS')
+        alice = BAMCTSAgent(alice, bob, args, name='MCTS')  # TODO: use bob_for_search instead of bob
     # alice = RolloutAgent(alice, bob, args, name='Rollout')
     ##
 
