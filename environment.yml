@@ -8,5 +8,6 @@ dependencies:
 - torchvision
 - cuda90
 - matplotlib
+- pandas
 - pip:
   - visdom==0.1.8.4
