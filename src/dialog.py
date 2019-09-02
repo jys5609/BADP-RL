@@ -161,6 +161,11 @@ class Dialog(object):
         else:
             reader, writer = self.agents
 
+        from agent import BAMCTSAgent
+        if isinstance(writer, BAMCTSAgent):
+            writer.agent.posterior *= writer.posterior_masking()
+            writer.agent.posterior /= np.sum(writer.agent.posterior)
+
         conv = []
         self.metrics.reset()
 
@@ -177,7 +182,6 @@ class Dialog(object):
 
             self.agents[1].context = ctxs[1]
 
-            from agent import BAMCTSAgent
             import copy
             if isinstance(reader, BAMCTSAgent):
                 agent_copy = copy.copy(writer)

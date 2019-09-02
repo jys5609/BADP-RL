@@ -7,5 +7,6 @@ dependencies:
 - pytorch=1.0.0
 - torchvision
 - cuda90
+- matplotlib
 - pip:
   - visdom==0.1.8.4
