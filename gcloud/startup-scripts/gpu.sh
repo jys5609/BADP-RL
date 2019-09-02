@@ -1,11 +1,12 @@
 #!/bin/bash
 NFS_ZONE=us-east1-b
+USER=starjongmin
 
 userdel -r ubuntu
 groupdel ubuntu
 groupmod -g 1000 google-sudoers
-usermod -u 1000 starjongmin
-groupmod -g 1001 starjongmin
+usermod -u 1000 $USER
+groupmod -g 1001 $USER
 
 NFS_IP=`gcloud compute instances describe nfs-instance --zone=$NFS_ZONE --format='get(networkInterfaces[0].networkIP)'`
 sudo apt-get install -y nfs-common; \
