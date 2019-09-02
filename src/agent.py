@@ -320,7 +320,8 @@ class BAMCTSAgent(Agent):
             return state_node.reward
 
         best_action_node = None
-        if len(state_node.children) < self.num_actions:
+        # if len(state_node.children) < self.num_actions:
+        if len(state_node.children) <= state_node.N ** 0.5 or len(state_node.children) < self.num_actions:
             # add new action
             while True:
                 self._apply_state(state_node)
@@ -339,7 +340,8 @@ class BAMCTSAgent(Agent):
 
         # Take action and get result
         rollout_next = False
-        if len(best_action_node.children) < self.num_states:
+        # if len(best_action_node.children) < self.num_states:
+        if len(best_action_node.children) <= best_action_node.N ** 0.5 or len(best_action_node.children) < self.num_states:
             # add new state
             partner_out, reward, done = self._forward_simulation(best_action_node)
             next_state_node = StateNode(self.agent, self.partner_agent, partner_out, reward, done)
