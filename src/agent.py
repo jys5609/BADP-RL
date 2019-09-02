@@ -22,6 +22,11 @@ import math
 from collections import Counter
 import copy
 
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
+from matplotlib.gridspec import GridSpec
+
 
 class Agent(object):
     """ Agent's interface. """
@@ -122,7 +127,71 @@ class BAMCTSAgent(Agent):
         log_likelihood = partner.calculate_likelihood(inpt)
         self.posterior_update(log_likelihood)
         # self.plot_posterior()
+        # self.plot_heatmap()
         return self.agent.read(inpt)
+
+    def get_hsvcmap(self, i, N, rot=0.):
+        nsc = 24
+        chsv = mcolors.rgb_to_hsv(plt.cm.hsv(((np.arange(N) / N) + rot) % 1.)[i, :3])
+        rhsv = mcolors.rgb_to_hsv(plt.cm.Reds(np.linspace(.2, 1, nsc))[:, :3])
+        arhsv = np.tile(chsv, nsc).reshape(nsc, 3)
+        arhsv[:, 1:] = rhsv[:, 1:]
+        rgb = mcolors.hsv_to_rgb(arhsv)
+        return mcolors.LinearSegmentedColormap.from_list("", rgb)
+
+    def columnwise_heatmap(self, array, ax=None, **kw):
+        ax = ax or plt.gca()
+        premask = np.tile(np.arange(array.shape[1]), array.shape[0]).reshape(array.shape)
+        images = []
+        for i in range(array.shape[1]):
+            col = np.ma.array(array, mask=premask != i)
+            im = ax.imshow(col, cmap=self.get_hsvcmap(i, array.shape[1], rot=0.09), **kw)
+            images.append(im)
+        return images
+
+    def marginalize(self):
+        books = [0 for i in range(11)]
+        hats = [0 for i in range(11)]
+        balls = [0 for i in range(11)]
+        idx = 0
+
+        for book in self.agent.values:
+            for hat in self.agent.values:
+                for ball in self.agent.values:
+                    books[int(book)] += self.agent.posterior[idx]
+                    hats[int(hat)] += self.agent.posterior[idx]
+                    balls[int(ball)] += self.agent.posterior[idx]
+                    idx += 1
+
+        books = np.array(books)
+        hats = np.array(hats)
+        balls = np.array(balls)
+
+        books = np.reshape(books, (11, 1))
+        hats = np.reshape(hats, (11, 1))
+        balls = np.reshape(balls, (11, 1))
+
+        marginal_posterior = np.concatenate([books, hats, balls], axis=-1)
+        return marginal_posterior
+
+    def plot_heatmap(self):
+        marginal_posterior = self.marginalize()
+        ind = [i for i in range(11)]
+        items = ["Book", "Hat", "Ball"]
+        m = len(ind)
+        n = len(items)
+        df = pd.DataFrame(marginal_posterior,
+                          index=ind, columns=[f"{i}" for i in items])
+
+        fig, ax = plt.subplots(figsize=(2.8, 3.8))
+
+        ims = self.columnwise_heatmap(df.values, ax=ax, aspect="auto")
+
+        ax.set(xticks=np.arange(len(df.columns)), yticks=np.arange(len(df)),
+               xticklabels=df.columns, yticklabels=df.index)
+        ax.tick_params(bottom=False, top=False,
+                       labelbottom=False, labeltop=True, left=False)
+        plt.show()
 
     def plot_posterior(self):
         x_book = [i - 0.2 for i in range(11)]
@@ -154,16 +223,28 @@ class BAMCTSAgent(Agent):
         e_x = np.exp(x/temperature)
         return e_x / (e_x.sum(axis=0))
 
+    def posterior_masking(self):
+        masking = np.ones(self.agent.posterior.shape)
+        book_count = int(self.ctx[0])
+        hat_count = int(self.ctx[2])
+        ball_count = int(self.ctx[4])
+        values = self.agent.values
+        idx = 0
+        for book in values:
+            for hat in values:
+                for ball in values:
+                    if (int(book)*book_count) + (int(hat)*hat_count) + (int(ball)*ball_count) != 10:
+                        masking[idx] = 0
+                    idx+=1
+        return masking
+
     def posterior_update(self, log_likelihood):
         log_posterior = np.log(self.agent.posterior) + log_likelihood
         self.agent.posterior = np.exp(log_posterior - np.max(log_posterior))
 
         # Simple normalize
+        self.agent.posterior *= self.posterior_masking()
         self.agent.posterior /= np.sum(self.agent.posterior)
-
-        # softmax normalize
-        # self.agent.posterior = self.softmax(self.agent.posterior)
-        # print()
 
     def _apply_state(self, node):
         self.agent.lang_h = copy.copy(node.lang_h)
