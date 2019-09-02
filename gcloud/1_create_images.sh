@@ -1,9 +1,8 @@
+source load_parse_yaml.sh
+eval $(parse_yaml config.yaml)
 BUCKET_NAME=bamcp-bucket
 ZONE=us-east1-b
 NFS_IP=`gcloud compute instances describe nfs-instance --zone=$ZONE --format='get(networkInterfaces[0].networkIP)'`
-
-GITHUB_USERNAME=username
-GITHUB_PASSWORD=password
 
 function create_instance(){
     gcloud compute  instances create $1-template \
@@ -12,7 +11,7 @@ function create_instance(){
         --image=debian-9-stretch-v20190124 \
         --image-project=debian-cloud \
         --boot-disk-size=10GB \
-        --scopes storage-full \
+        --scopes compute-ro,storage-full \
         --metadata-from-file startup-script=startup-scripts/$1.sh
 }
 

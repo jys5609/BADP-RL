@@ -11,7 +11,8 @@ gcloud compute  instances create nfs-instance \
     --boot-disk-size=10GB \
     --tags http-server,https-server \
     --deletion-protection \
-    --metadata-from-file startup-script=startup-scripts/nfs.sh
+    --metadata-from-file startup-script=startup-scripts/nfs.sh \
+    --scopes compute-ro,default
 
 gcloud compute  instances create example \
     --zone=$ZONE \
@@ -20,7 +21,8 @@ gcloud compute  instances create example \
     --image-project=debian-cloud \
     --boot-disk-size=10GB \
     --tags http-server,https-server \
-    --metadata startup-script="apt-get update && apt-get install -y wget curl git nfs-common"
+    --metadata startup-script="apt-get update && apt-get install -y wget curl git nfs-common" \
+    --scopes compute-ro,default
 
 echo 'Sleep 180 seconds...'
 sleep 180
