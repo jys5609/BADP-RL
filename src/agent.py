@@ -3191,15 +3191,8 @@ class BaselineClusteringRolloutAgent(BaselineClusteringAgent):
         return self._decode(out[1:], self.model.word_dict)
 
 
-
-
-
-
-"""
-
-
 class HumanAgent(Agent):
-    def __init__(self, domain, name='Human'):
+    def __init__(self, domain, name):
         self.name = name
         self.human = True
         self.domain = domain
@@ -3210,7 +3203,13 @@ class HumanAgent(Agent):
     def feed_partner_context(self, partner_context):
         pass
 
-    def write(self):
+    def update(self, agree, reward, choice=0,
+                partner_choice=0, partner_input=0, max_partner_reward=0):
+        pass
+
+    def write(self, max_words=100):
+        import time
+        time.sleep(1)
         while True:
             try:
                 return input('%s : ' % self.name).lower().strip().split() + ['<eos>']
@@ -3229,4 +3228,4 @@ class HumanAgent(Agent):
             #except:
             #    print('Your choice is invalid! Try again.')
 
-"""
+
