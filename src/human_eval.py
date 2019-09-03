@@ -167,13 +167,13 @@ def main():
     utils.use_cuda(args.cuda)
     utils.set_seed(args.seed)
 
-    alice_model = utils.load_model(args.alice_model_file)
-    alice_ty = get_agent_type(alice_model, args.smart_alice)
-    alice = alice_ty(alice_model, args, name='Alice', train=False)
-    alice.vis = args.visual
+    # alice_model = utils.load_model(args.alice_model_file)
+    # alice_ty = get_agent_type(alice_model, args.smart_alice)
+    # alice = alice_ty(alice_model, args, name='Alice', train=False)
+    # alice.vis = args.visual
 
     name = input("Type your name: ")
-    num_exp = input("How many times: ")
+    num_exp = input("How many times(*5): ")
 
     print()
     print("========Dialogue Example 1========")
@@ -196,6 +196,9 @@ def main():
           "A: deal <eos>\n"
           "B: <selection>\n")
 
+    import time
+    time.sleep(10)
+
     print("START!!!!!!!!\n")
 
     human = HumanAgent(domain.get_domain(args.domain), name)
@@ -206,14 +209,21 @@ def main():
     model_files = ['likelihood.th', 'reinforce.th', 'badp_rl.th', 'h_reinforce.th', 'full_model.th']
 
     random.shuffle(model_names)
-    model_names *= num_exp
+    model_names *= int(num_exp)
 
     for model_name in model_names:
-        args.alice_model_file = model_files[model_idxs[model_name]]
-        alice_model = utils.load_model(args.alice_model_file)
+        # args.alice_model_file = model_files[model_idxs[model_name]]
+        # alice_model = utils.load_model(args.alice_model_file)
+        # alice_ty = get_agent_type(alice_model, args.smart_alice)
+        # alice = alice_ty(alice_model, args, name=model_name, train=False)
+        # alice.vis = args.visual
+
+        ###
+        alice_model = utils.load_model("rnn_model.th")
         alice_ty = get_agent_type(alice_model, args.smart_alice)
-        alice = alice_ty(alice_model, args, name=model_name, train=False)
+        alice = alice_ty(alice_model, args, name='Alice', train=False)
         alice.vis = args.visual
+        ###
 
         dialog = Dialog([alice, human], args)
         logger = DialogLogger(verbose=args.verbose, log_file=args.log_file + '.tmp')

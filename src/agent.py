@@ -23,8 +23,8 @@ from collections import Counter
 import copy
 
 import pandas as pd
-import matplotlib.pyplot as plt
-import matplotlib.colors as mcolors
+# import matplotlib.pyplot as plt
+# import matplotlib.colors as mcolors
 from matplotlib.gridspec import GridSpec
 
 
@@ -3221,7 +3221,8 @@ class HumanAgent(Agent):
     def choose(self):
         while True:
             try:
-                choice = input('%s choice: ' % self.name)
+                print ("Just type the number of each item (ex. 1 0 2)")
+                choice = input('%s choice (ex. 1 0 2): ' % self.name)
                 return self.domain.parse_human_choice(self.ctx, choice)
             except KeyboardInterrupt:
                 sys.exit()

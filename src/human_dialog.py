@@ -147,12 +147,19 @@ class Dialog(object):
 
     def run(self, ctxs, logger, max_words=5000, data_saver=None):
         assert len(self.agents) == len(ctxs)
+        history = open("%s_history.txt" % str(self.agents[0].name), 'a')
+        history.write('Dialogue start')
+        history.write('=' * 80)
         for agent, ctx, partner_ctx in zip(self.agents, ctxs, reversed(ctxs)):
             agent.feed_context(ctx)
             agent.feed_partner_context(partner_ctx)
             # logger.dump_ctx(agent.name, ctx)
+            s = ' '.join(['%s=(count:%s value:%s)' % (DialogLogger.CODE2ITEM[i][1], ctxs[1][2 * i], ctxs[1][2 * i + 1]) \
+                          for i in range(3)])
+            history.write(s+'\n')
         logger.dump_ctx(self.agents[1].name, ctxs[1])
         logger.dump('-' * 80)
+        history.write('-' * 80)
         if data_saver:
             data_saver.write('<input> %s </input> ' % ' '.join(ctxs[0]))
 
@@ -300,9 +307,9 @@ class Dialog(object):
         level = input("Check the agent's language level (1:bad - 5:good): ")
         f = open("%s_summary.txt" % str(self.agents[0].name), 'a')
         if agree:
-            s = "%svs%s %s:%s len=%s level=%s Agreement\n" % (self.agents[0].name, self.agents[1].name, rewards[0], rewards[1], len(conv), level)
+            s = "%s vs %s %s:%s len=%s level=%s Agreement\n" % (self.agents[0].name, self.agents[1].name, rewards[0], rewards[1], len(conv), level)
         else:
-            s = "%svs%s %s:%s len=%s level=%s Disagreement\n" % (self.agents[0].name, self.agents[1].name, 0, 0, len(conv), level)
+            s = "%s vs %s %s:%s len=%s level=%s Disagreement\n" % (self.agents[0].name, self.agents[1].name, 0, 0, len(conv), level)
         f.write(s)
         f.close()
 
